@@ -5,6 +5,7 @@
  */
 package service;
 
+import domain.IDomainObject;
 import domain.Otpremnica;
 import java.util.List;
 
@@ -18,12 +19,12 @@ public interface ServiceOtpremnica {
 
     public Otpremnica izmeniOtpremnicu(Otpremnica o);
 
-    public List<Otpremnica> vratiOt();
+    public List<IDomainObject> vratiOt();
 
-    public Otpremnica vratiOt(Long sifraOtpremnice);
+    public Otpremnica vratiOt(Otpremnica otpremnica);
 
-    public List<Otpremnica> vratiOtpPoKrt(String sifra, String clan);
+    public List<IDomainObject> vratiOtpPoKrt(Otpremnica otpremnica);
 
-    public void obrisiOtp(Long sifra);
+    public void obrisiOtp(Otpremnica otpremnica);
     
 }

@@ -13,12 +13,9 @@ import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import storage.StorageClan;
 
 /**
@@ -66,14 +63,14 @@ public class StorageDatabaseClan implements StorageClan{
      * @throws Exception
      */
     @Override
-    public void obrisiC(Long brojCK) throws Exception{
+    public void obrisiC(Clan clan) throws Exception{
         
         Connection conn = ConnectionFactory.getInstance().getConnection();
             
         String query = "DELETE FROM clan WHERE brojCK = ?";
             
         PreparedStatement ps = conn.prepareStatement(query);
-        ps.setLong(1, brojCK);
+        ps.setLong(1, clan.getBrojCK());
         ps.executeUpdate();
             
         ps.close();

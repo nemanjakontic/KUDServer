@@ -5,6 +5,8 @@
  */
 package service.impl;
 
+import database.broker.DatabaseBroker;
+import domain.IDomainObject;
 import domain.Nosnja;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,15 +20,18 @@ import storage.impl.database.StorageDatabaseNosnja;
  */
 public class ServiceNosnjaImpl implements service.ServiceNosnja{
     private final StorageNosnja storageNosnja;
+    private final DatabaseBroker databaseBroker;
 
     public ServiceNosnjaImpl() {
         storageNosnja = new StorageDatabaseNosnja();
+        databaseBroker = new DatabaseBroker();
     }
 
     @Override
     public Nosnja sacuvajNo(Nosnja n) {
         try {
-            return storageNosnja.sacuvajN(n);
+            //return storageNosnja.sacuvajN(n);
+            return (Nosnja) databaseBroker.save2(n);
         } catch (Exception ex) {
             Logger.getLogger(ServiceNosnjaImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -36,7 +41,8 @@ public class ServiceNosnjaImpl implements service.ServiceNosnja{
     @Override
     public Nosnja izmeniNo(Nosnja n) {
         try {
-            return storageNosnja.izmeniN(n);
+            //return storageNosnja.izmeniN(n);
+            return (Nosnja) databaseBroker.update(n);
         } catch (Exception ex) {
             Logger.getLogger(ServiceNosnjaImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -44,18 +50,20 @@ public class ServiceNosnjaImpl implements service.ServiceNosnja{
     }
 
     @Override
-    public void obrisiNo(int sifra) {
+    public void obrisiNo(Nosnja nosnja) {
         try {
-            storageNosnja.obrisiN(sifra);
+            //storageNosnja.obrisiN(sifra);
+            databaseBroker.delete(nosnja);
         } catch (Exception ex) {
             Logger.getLogger(ServiceNosnjaImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public List<Nosnja> vratiListuNo() {
+    public List<IDomainObject> vratiListuNo() {
         try {
-            return storageNosnja.vratiListuN();
+            //return storageNosnja.vratiListuN();
+            return databaseBroker.getAll(new Nosnja());
         } catch (Exception ex) {
             Logger.getLogger(ServiceNosnjaImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -63,14 +71,21 @@ public class ServiceNosnjaImpl implements service.ServiceNosnja{
     }
 
     @Override
-    public Nosnja vratiNo(int sifraNosnje) {
-        return storageNosnja.vratiN(sifraNosnje);
+    public Nosnja vratiNo(Nosnja nosnja) {
+        try {
+            //return storageNosnja.vratiN(sifraNosnje);
+            return (Nosnja) databaseBroker.getOne(nosnja);
+        } catch (Exception ex) {
+            Logger.getLogger(ServiceNosnjaImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
     @Override
-    public List<Nosnja> vratiNosnjePoKrit(String kriterijumPretrage, String naziv, String vrsta) {
+    public List<IDomainObject> vratiNosnjePoKrit(Nosnja nosnja) {
         try {
-            return storageNosnja.vratiNosnjuPoK(kriterijumPretrage, naziv, vrsta);
+            //return storageNosnja.vratiNosnjuPoK(kriterijumPretrage, naziv, vrsta);
+            return databaseBroker.getByCrit(nosnja);
         } catch (Exception ex) {
             Logger.getLogger(ServiceNosnjaImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

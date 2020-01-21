@@ -54,7 +54,7 @@ public class StorageDatabaseOtpremnica implements StorageOtpremnica {
                 ps.setInt(1, stavka.getRedniBroj());
                 ps.setLong(2, o.getSifraOtpremnice());
                 ps.setLong(3, stavka.getKolicina());
-                ps.setInt(4, stavka.getNosnja().getSifraNosnje());
+                ps.setLong(4, stavka.getNosnja().getSifraNosnje());
 
                 ps.executeUpdate();
             }
@@ -66,7 +66,7 @@ public class StorageDatabaseOtpremnica implements StorageOtpremnica {
                 ps.setInt(1, izmena.getRb());
                 ps.setLong(2, o.getSifraOtpremnice());
                 ps.setDate(3, new Date(o.getDatumKreiranja().getTime()));
-                ps.setInt(4, izmena.getNosnja().getSifraNosnje());
+                ps.setLong(4, izmena.getNosnja().getSifraNosnje());
                 ps.executeUpdate();
             }
 
@@ -91,7 +91,7 @@ public class StorageDatabaseOtpremnica implements StorageOtpremnica {
             ps.setInt(1, stavka.getRedniBroj());
             ps.setLong(2, o.getSifraOtpremnice());
             ps.setLong(3, stavka.getKolicina());
-            ps.setInt(4, stavka.getNosnja().getSifraNosnje());
+            ps.setLong(4, stavka.getNosnja().getSifraNosnje());
 
             ps.executeUpdate();
         }
@@ -109,7 +109,7 @@ public class StorageDatabaseOtpremnica implements StorageOtpremnica {
             ps.setInt(1, izmena.getRb());
             ps.setLong(2, o.getSifraOtpremnice());
             ps.setDate(3, new Date(o.getDatumKreiranja().getTime()));
-            ps.setInt(4, izmena.getNosnja().getSifraNosnje());
+            ps.setLong(4, izmena.getNosnja().getSifraNosnje());
             ps.executeUpdate();
         }
 
@@ -199,7 +199,7 @@ public class StorageDatabaseOtpremnica implements StorageOtpremnica {
                 st.setKolicina(rs.getLong("kolicina"));
 
                 Nosnja nosnja = new Nosnja();
-                nosnja.setSifraNosnje(rs.getInt("sifraNosnje"));
+                nosnja.setSifraNosnje(rs.getLong("sifraNosnje"));
                 nosnja.setNazivNosnje(rs.getString("nazivNosnje"));
                 nosnja.setVrstaNosnje(VrstaNosnje.valueOf(rs.getString("vrstaNosnje")));
                 st.setNosnja(nosnja);
@@ -217,7 +217,7 @@ public class StorageDatabaseOtpremnica implements StorageOtpremnica {
                 iz.setDatumIzmene(rs.getDate("datumIzmene"));
 
                 Nosnja nosnja = new Nosnja();
-                nosnja.setSifraNosnje(rs.getInt("sifraNosnje"));
+                nosnja.setSifraNosnje(rs.getLong("sifraNosnje"));
                 nosnja.setNazivNosnje(rs.getString("nazivNosnje"));
                 nosnja.setVrstaNosnje(VrstaNosnje.valueOf(rs.getString("vrstaNosnje")));
                 iz.setNosnja(nosnja);

@@ -5,7 +5,9 @@
  */
 package service.impl;
 
+import database.broker.DatabaseBroker;
 import domain.Clan;
+import domain.IDomainObject;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,15 +21,19 @@ import storage.impl.database.StorageDatabaseClan;
  */
 public class ServiceClanImpl implements ServiceClan{
     private final StorageClan storageClan;
+    //novo
+    private final DatabaseBroker databaseBroker;
 
     public ServiceClanImpl() {
         storageClan = new StorageDatabaseClan();
+        databaseBroker = new DatabaseBroker();
     }
 
     @Override
     public Clan zapamtiCl(Clan clan) {
         try {
-            return storageClan.zapamtiC(clan);
+            //return storageClan.zapamtiC(clan);
+            return (Clan) databaseBroker.save2(clan);
         } catch (Exception ex) {
             Logger.getLogger(ServiceClanImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -35,9 +41,10 @@ public class ServiceClanImpl implements ServiceClan{
     }
 
     @Override
-    public void obrisiCl(Long brojCK) {
+    public void obrisiCl(Clan clan) {
         try {
-            storageClan.obrisiC(brojCK);
+            //storageClan.obrisiC(clan);
+            databaseBroker.delete(clan);
         } catch (Exception ex) {
             Logger.getLogger(ServiceClanImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -46,7 +53,8 @@ public class ServiceClanImpl implements ServiceClan{
     @Override
     public Clan izmeniCl(Clan clan) {
         try {
-            return storageClan.izmeniC(clan);
+            //return storageClan.izmeniC(clan);
+            return (Clan) databaseBroker.update(clan);
         } catch (Exception ex) {
             Logger.getLogger(ServiceClanImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -54,9 +62,10 @@ public class ServiceClanImpl implements ServiceClan{
     }
 
     @Override
-    public List<Clan> vratiListuCl() {
+    public List<IDomainObject> vratiListuCl() {
         try {
-            return storageClan.vratiListuC();
+            //return storageClan.vratiListuC();
+            return databaseBroker.getAll(new Clan());
         } catch (Exception ex) {
             Logger.getLogger(ServiceClanImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -64,9 +73,10 @@ public class ServiceClanImpl implements ServiceClan{
     }
 
     @Override
-    public Clan vratiCl(Long brojCK) {
+    public Clan vratiCl(Clan clan) {
         try {
-            return storageClan.vratiC(brojCK);
+            //return storageClan.vratiC(brojCK);
+            return (Clan) databaseBroker.getOne(clan);
         } catch (Exception ex) {
             Logger.getLogger(ServiceClanImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -74,17 +84,14 @@ public class ServiceClanImpl implements ServiceClan{
     }
 
     @Override
-    public List<Clan> vratiClanovePoKriterijumu(String sifra, String ime, String prezime) {
+    public List<IDomainObject> vratiClanovePoKriterijumu(Clan clan) {
         try {
-            return storageClan.vratiClanovePoKr(sifra, ime, prezime);
+            //return storageClan.vratiClanovePoKr(sifra, ime, prezime);
+            return databaseBroker.getByCrit(clan);
         } catch (Exception ex) {
             Logger.getLogger(ServiceClanImpl.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
     }
 
-    
-    
-    
-    
 }

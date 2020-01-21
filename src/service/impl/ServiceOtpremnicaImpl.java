@@ -5,7 +5,11 @@
  */
 package service.impl;
 
+import database.broker.DatabaseBroker;
+import domain.IDomainObject;
+import domain.IzmeneOtpremnice;
 import domain.Otpremnica;
+import domain.StavkaOtpremnice;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -20,9 +24,11 @@ import storage.impl.database.StorageDatabaseOtpremnica;
  */
 public class ServiceOtpremnicaImpl implements ServiceOtpremnica{
     private final StorageOtpremnica storageOtpremnica;
+    private final DatabaseBroker databaseBroker;
 
     public ServiceOtpremnicaImpl() {
         storageOtpremnica = new StorageDatabaseOtpremnica();
+        databaseBroker = new DatabaseBroker();
     }
     
     
@@ -31,7 +37,7 @@ public class ServiceOtpremnicaImpl implements ServiceOtpremnica{
     public Otpremnica sacuvajOt(Otpremnica o) {
         o.setDatumKreiranja(new Date());
         try {
-            return storageOtpremnica.sacuvajO(o);
+            return (Otpremnica) databaseBroker.save2(o);
         } catch (Exception ex) {
             Logger.getLogger(ServiceOtpremnicaImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -50,9 +56,10 @@ public class ServiceOtpremnicaImpl implements ServiceOtpremnica{
     }
 
     @Override
-    public List<Otpremnica> vratiOt() {
+    public List<IDomainObject> vratiOt() {
         try {
-            return storageOtpremnica.vratiSveO();
+            //return storageOtpremnica.vratiSveO();
+            return databaseBroker.getAll(new Otpremnica());
         } catch (Exception ex) {
             Logger.getLogger(ServiceOtpremnicaImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -60,9 +67,10 @@ public class ServiceOtpremnicaImpl implements ServiceOtpremnica{
     }
 
     @Override
-    public Otpremnica vratiOt(Long sifraOtpremnice) {
+    public Otpremnica vratiOt(Otpremnica otpremnica) {
         try {
-            return storageOtpremnica.vratiOtp(sifraOtpremnice);
+            //return storageOtpremnica.vratiOtp(sifraOtpremnice);
+            return (Otpremnica) databaseBroker.getOne(otpremnica);
         } catch (Exception ex) {
             Logger.getLogger(ServiceOtpremnicaImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -70,9 +78,10 @@ public class ServiceOtpremnicaImpl implements ServiceOtpremnica{
     }
 
     @Override
-    public List<Otpremnica> vratiOtpPoKrt(String sifra, String clan) {
+    public List<IDomainObject> vratiOtpPoKrt(Otpremnica otpremnica) {
         try {
-            return storageOtpremnica.vratiOtpPoKr(sifra, clan);
+            //return storageOtpremnica.vratiOtpPoKr(sifra, clan);
+            return databaseBroker.getByCrit(otpremnica);
         } catch (Exception ex) {
             Logger.getLogger(ServiceOtpremnicaImpl.class.getName()).log(Level.SEVERE, null, ex);
             return null;
@@ -80,9 +89,10 @@ public class ServiceOtpremnicaImpl implements ServiceOtpremnica{
     }
 
     @Override
-    public void obrisiOtp(Long sifra) {
+    public void obrisiOtp(Otpremnica otpremnica) {
         try {
-            storageOtpremnica.obrisiO(sifra);
+            //storageOtpremnica.obrisiO(sifra);
+            databaseBroker.delete(otpremnica);
         } catch (Exception ex) {
             Logger.getLogger(ServiceOtpremnicaImpl.class.getName()).log(Level.SEVERE, null, ex);
         }

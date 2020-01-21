@@ -21,7 +21,7 @@ public class StorageDatabaseUser implements StorageUser {
     @Override
     public User login(String username, String password) throws Exception {
         Connection connection = ConnectionFactory.getInstance().getConnection();
-        String query = "Select * from users where username=? and password=?";
+        String query = "Select * from users where username=?";// and password=?";
         PreparedStatement preparedStatement = connection.prepareStatement(query);
         preparedStatement.setString(1, username);
         preparedStatement.setString(2, password);

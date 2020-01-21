@@ -16,7 +16,7 @@ public interface StorageClan {
 
     public Clan zapamtiC(Clan clan) throws Exception;
 
-    public void obrisiC(Long brojCK) throws Exception;
+    public void obrisiC(Clan clan) throws Exception;
 
     public Clan izmeniC(Clan clan) throws Exception;
 

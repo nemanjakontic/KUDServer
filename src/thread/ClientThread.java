@@ -6,6 +6,7 @@
 package thread;
 
 import domain.Clan;
+import domain.IDomainObject;
 import domain.Nosnja;
 import domain.Otpremnica;
 import domain.User;
@@ -83,43 +84,43 @@ public class ClientThread extends Thread {
         int operation = requestObject.getOperation();
         switch (operation) {
             case Operation.LOGIN:
-                return login((Map) requestObject.getData());
+                return login((User) requestObject.getData());
             case Operation.SAVE_CLAN:
                 return saveClan((Clan) requestObject.getData());
             case Operation.VRATI_JEDNOG_CLANA:
-                return vratiClana((long) requestObject.getData());
+                return vratiClana((Clan) requestObject.getData());
             case Operation.VRATI_SVЕ_CLANOVE:
                 return vratiSveClanove((List<Clan>) requestObject.getData());
             case Operation.VRATI_CLANOVE_PO_KRITERIJUMU:
-                return vratiClanovePoKrit((Map) requestObject.getData());
+                return vratiClanovePoKrit((Clan) requestObject.getData());
             case Operation.OBRISI_CLANA:
-                return obrisiClana((long)requestObject.getData());
+                return obrisiClana((Clan)requestObject.getData());
             case Operation.IZMENI_CLANA:
                 return izmeniClana((Clan)requestObject.getData());
             case Operation.SAVE_NOSNJA:
                 return sacuvajNosnju((Nosnja)requestObject.getData());
             case Operation.OBRISI_NOSNJU:
-                return obrisiNosnju((int)requestObject.getData());
+                return obrisiNosnju((Nosnja)requestObject.getData());
             case Operation.IZMENI_NOSNJU:
                 return izmeniNosnju((Nosnja)requestObject.getData());
             case Operation.VRATI_JEDNU_NOSNJU:
-                return vratiNosnju((int)requestObject.getData());
+                return vratiNosnju((Nosnja)requestObject.getData());
             case Operation.VRATI_SVЕ_NOSNJE:
                 return vratiSveNosnje((List<Nosnja>)requestObject.getData());
             case Operation.VRATI_NOSNJE_PO_KRITERIJUMU:
-                return vratiNosnjePoKrt((Map)requestObject.getData());
+                return vratiNosnjePoKrt((Nosnja)requestObject.getData());
             case Operation.SAVE_OTPREMNICA:
                 return sacuvajOtpremnicu((Otpremnica)requestObject.getData());
             case Operation.IZMENI_OTPREMNICU:
                 return izmeniOtpremnicu((Otpremnica)requestObject.getData());
             case Operation.OBRISI_OTPREMNICU:
-                return obrisiOtpremnicu((long)requestObject.getData());
+                return obrisiOtpremnicu((Otpremnica)requestObject.getData());
             case Operation.VRATI_SVЕ_OTPREMNICE:
                 return vratiSveOtpremnice();
             case Operation.VRATI_JEDNU_OTPREMNICE:
-                return vratiJednuOtp((long)requestObject.getData());
+                return vratiJednuOtp((Otpremnica)requestObject.getData());
             case Operation.VRATI_OTPREMNICE_PO_KRITERIJUMU:
-                return vratiOtpPoKrt((Map)requestObject.getData());
+                return vratiOtpPoKrt((Otpremnica)requestObject.getData());
         }
         return null;
     }
@@ -138,12 +139,12 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject login(Map data) {
-        String username = (String) data.get("username");
-        String password = (String) data.get("password");
+    private ResponseObject login(User user1) {
+        /*String username = (String) data.get("username");
+        String password = (String) data.get("password");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            User user = serviceUser.login(username, password);
+            User user = serviceUser.login(user1);
             responseObject.setData(user);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             loginUser = user;
@@ -155,7 +156,7 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject vratiClana(Long data) {
+    private ResponseObject vratiClana(Clan data) {
         ResponseObject responseObject = new ResponseObject();
         try {
             Clan c = serviceClan.vratiCl(data);
@@ -172,7 +173,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiSveClanove(List<Clan> list) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<Clan> clanovi = serviceClan.vratiListuCl();
+            List<IDomainObject> clanovi = serviceClan.vratiListuCl();
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(clanovi);
         } catch (Exception ex) {
@@ -183,13 +184,13 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject vratiClanovePoKrit(Map map) {
-        String sifra = (String) map.get("sifra");
+    private ResponseObject vratiClanovePoKrit(Clan clan) {
+        /*String sifra = (String) map.get("sifra");
         String ime = (String) map.get("ime");
-        String prezime = (String) map.get("prezime");
+        String prezime = (String) map.get("prezime");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<Clan> clanovi = serviceClan.vratiClanovePoKriterijumu(sifra, ime, prezime);
+            List<IDomainObject> clanovi = serviceClan.vratiClanovePoKriterijumu(clan);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(clanovi);
         } catch (Exception ex) {
@@ -200,10 +201,10 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject obrisiClana(long l) {
+    private ResponseObject obrisiClana(Clan clan) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            serviceClan.obrisiCl(l);
+            serviceClan.obrisiCl(clan);
             responseObject.setStatus(ResponseStatus.SUCCESS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -241,10 +242,10 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject obrisiNosnju(int i) {
+    private ResponseObject obrisiNosnju(Nosnja nosnja) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            serviceNosnja.obrisiNo(i);
+            serviceNosnja.obrisiNo(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -268,10 +269,10 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject vratiNosnju(int i) {
+    private ResponseObject vratiNosnju(Nosnja nosnja) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Nosnja n = serviceNosnja.vratiNo(i);
+            Nosnja n = serviceNosnja.vratiNo(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(n);
         } catch (Exception ex) {
@@ -285,7 +286,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiSveNosnje(List<Nosnja> list) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<Nosnja> nosnje = serviceNosnja.vratiListuNo();
+            List<IDomainObject> nosnje = serviceNosnja.vratiListuNo();
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(nosnje);
         } catch (Exception ex) {
@@ -296,13 +297,13 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject vratiNosnjePoKrt(Map map) {
-        String sifra1 = (String) map.get("sifraNosnje");
+    private ResponseObject vratiNosnjePoKrt(Nosnja nosnja) {
+        /*String sifra1 = (String) map.get("sifraNosnje");
         String naziv = (String) map.get("naziv");
-        String vrsta = (String) map.get("vrsta");
+        String vrsta = (String) map.get("vrsta");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<Nosnja> nosnje = serviceNosnja.vratiNosnjePoKrit(sifra1, naziv, vrsta);
+            List<IDomainObject> nosnje = serviceNosnja.vratiNosnjePoKrit(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(nosnje);
         } catch (Exception ex) {
@@ -341,10 +342,10 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject obrisiOtpremnicu(long l) {
+    private ResponseObject obrisiOtpremnicu(Otpremnica otpremnica) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            serviceOtpremnica.obrisiOtp(l);
+            serviceOtpremnica.obrisiOtp(otpremnica);
             responseObject.setStatus(ResponseStatus.SUCCESS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -357,7 +358,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiSveOtpremnice() {
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<Otpremnica> otpremnice = serviceOtpremnica.vratiOt();
+            List<IDomainObject> otpremnice = serviceOtpremnica.vratiOt();
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otpremnice);
         } catch (Exception ex) {
@@ -368,10 +369,10 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject vratiJednuOtp(long l) {
+    private ResponseObject vratiJednuOtp(Otpremnica otpremnica) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Otpremnica otp = serviceOtpremnica.vratiOt(l);
+            Otpremnica otp = serviceOtpremnica.vratiOt(otpremnica);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otp);
         } catch (Exception ex) {
@@ -382,12 +383,12 @@ public class ClientThread extends Thread {
         return responseObject;
     }
 
-    private ResponseObject vratiOtpPoKrt(Map map) {
-        String sifra1 = (String) map.get("sifra");
-        String clan = (String) map.get("clan");
+    private ResponseObject vratiOtpPoKrt(Otpremnica otp) {
+        /*String sifra1 = (String) map.get("sifra");
+        String clan = (String) map.get("clan");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<Otpremnica> otpremnice = serviceOtpremnica.vratiOtpPoKrt(sifra1, clan);
+            List<IDomainObject> otpremnice = serviceOtpremnica.vratiOtpPoKrt(otp);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otpremnice);
         } catch (Exception ex) {

@@ -48,7 +48,7 @@ public class StorageDatabaseNosnja implements StorageNosnja {
 
         ResultSet rs = ps.getGeneratedKeys();
         while (rs.next()) {
-            int id = rs.getInt(1);
+            Long id = rs.getLong(1);
             n.setSifraNosnje(id);
         }
         ps.close();
@@ -74,7 +74,7 @@ public class StorageDatabaseNosnja implements StorageNosnja {
         ps.setString(6, String.valueOf(n.getVrstaBeline()));
         ps.setString(7, String.valueOf(n.getVrstaOpanaka()));
         ps.setString(8, n.getVelicina());
-        ps.setInt(9, n.getSifraNosnje());
+        ps.setLong(9, n.getSifraNosnje());
 
         ps.executeUpdate();
 
@@ -85,13 +85,13 @@ public class StorageDatabaseNosnja implements StorageNosnja {
 
     
     @Override
-    public void obrisiN(int sifra) throws Exception {
+    public void obrisiN(Long sifra) throws Exception {
         Connection conn = ConnectionFactory.getInstance().getConnection();
 
         String upit = "DELETE FROM nosnja1 WHERE sifraNosnje = ?";
 
         PreparedStatement ps = conn.prepareStatement(upit);
-        ps.setInt(1, sifra);
+        ps.setLong(1, sifra);
         ps.executeUpdate();
 
         ps.close();
@@ -112,7 +112,7 @@ public class StorageDatabaseNosnja implements StorageNosnja {
         while (rs.next()) {
             Nosnja n = new Nosnja();
 
-            int sifra = rs.getInt("sifraNosnje");
+            Long sifra = rs.getLong("sifraNosnje");
             VrstaNosnje vrstaNosnje = VrstaNosnje.valueOf(rs.getString("vrstaNosnje"));
             Pol pol = Pol.valueOf(rs.getString("pol"));
             String nazivNosnje = rs.getString("nazivNosnje");
@@ -139,7 +139,7 @@ public class StorageDatabaseNosnja implements StorageNosnja {
     }
 
     @Override
-    public Nosnja vratiN(int sifraNosnje) {
+    public Nosnja vratiN(Long sifraNosnje) {
         Connection connection;
         try {
             connection = ConnectionFactory.getInstance().getConnection();
@@ -154,7 +154,7 @@ public class StorageDatabaseNosnja implements StorageNosnja {
             //List<Nosnja> nosnje = new ArrayList<>();
             
             if (rs.next()) {
-                int sifra = rs.getInt("sifraNosnje");
+                Long sifra = rs.getLong("sifraNosnje");
                 VrstaNosnje vrstaNosnje = VrstaNosnje.valueOf(rs.getString("vrstaNosnje"));
                 Pol pol = Pol.valueOf(rs.getString("pol"));
                 String nazivNosnje = rs.getString("nazivNosnje");
@@ -213,7 +213,7 @@ public class StorageDatabaseNosnja implements StorageNosnja {
         Nosnja n = null;
         
         while(rs.next()) {
-                int sifra = rs.getInt("sifraNosnje");
+                Long sifra = rs.getLong("sifraNosnje");
                 VrstaNosnje vrstaNosnje = VrstaNosnje.valueOf(rs.getString("vrstaNosnje"));
                 Pol pol = Pol.valueOf(rs.getString("pol"));
                 String nazivNosnje = rs.getString("nazivNosnje");

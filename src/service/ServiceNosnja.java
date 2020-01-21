@@ -5,6 +5,7 @@
  */
 package service;
 
+import domain.IDomainObject;
 import domain.Nosnja;
 import java.util.List;
 
@@ -18,23 +19,13 @@ public interface ServiceNosnja {
 
     public Nosnja izmeniNo(Nosnja n);
 
-    public void obrisiNo(int sifra);
+    public void obrisiNo(Nosnja nosnja);
 
-    /*public OpstaNosnja sacuvajNo(OpstaNosnja o);
+    public List<IDomainObject> vratiListuNo();
 
-    public OpstaNosnja izmeniNo(OpstaNosnja o);
+    public Nosnja vratiNo(Nosnja nosnja);
 
-    public Belina sacuvajBe(Belina b);
-
-    public Belina izmeniBe(Belina b);
-
-    public void obrisiBe(String sifra);*/
-
-    public List<Nosnja> vratiListuNo();
-
-    public Nosnja vratiNo(int sifraNosnje);
-
-    public List<Nosnja> vratiNosnjePoKrit(String kriterijumPretrage, String naziv, String vrsta);
+    public List<IDomainObject> vratiNosnjePoKrit(Nosnja nosnja);
 
     
     

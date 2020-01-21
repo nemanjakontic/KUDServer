@@ -21,11 +21,11 @@ public interface StorageNosnja {
 
     public Nosnja izmeniN(Nosnja o) throws Exception;
 
-    public void obrisiN(int sifra) throws Exception;
+    public void obrisiN(Long sifra) throws Exception;
 
     public List<Nosnja> vratiListuN() throws Exception;
 
-    public Nosnja vratiN(int sifraNosnje);
+    public Nosnja vratiN(Long sifraNosnje);
 
     public List<Nosnja> vratiNosnjuPoK(String kriterijumPretrage, String naziv, String vrsta) throws Exception;
 

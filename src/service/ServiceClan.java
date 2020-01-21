@@ -6,6 +6,7 @@
 package service;
 
 import domain.Clan;
+import domain.IDomainObject;
 import java.util.List;
 
 /**
@@ -16,15 +17,15 @@ public interface ServiceClan {
 
     public Clan zapamtiCl(Clan clan);
 
-    public void obrisiCl(Long brojCK);
+    public void obrisiCl(Clan clan);
 
     public Clan izmeniCl(Clan clan);
 
-    public List<Clan> vratiListuCl();
+    public List<IDomainObject> vratiListuCl();
 
-    public Clan vratiCl(Long brojCK);
+    public Clan vratiCl(Clan clan);
 
-    public List<Clan> vratiClanovePoKriterijumu(String sifra, String ime, String prezime);
+    public List<IDomainObject> vratiClanovePoKriterijumu(Clan clan);
 
     
     
