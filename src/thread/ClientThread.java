@@ -5,6 +5,7 @@
  */
 package thread;
 
+import controller.Controller;
 import domain.Clan;
 import domain.IDomainObject;
 import domain.Nosnja;
@@ -15,17 +16,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import service.ServiceClan;
-import service.ServiceNosnja;
-import service.ServiceOtpremnica;
-import service.ServiceUser;
-import service.impl.ServiceClanImpl;
-import service.impl.ServiceNosnjaImpl;
-import service.impl.ServiceOtpremnicaImpl;
-import service.impl.ServiceUserImpl;
 import transfer.RequestObject;
 import transfer.ResponseObject;
 import util.Operation;
@@ -39,11 +31,8 @@ public class ClientThread extends Thread {
 
     private final Socket socket;
     private final ObjectInputStream objectInputStream;
-    private final ObjectOutputStream objectOutputStream;
-    private final ServiceClan serviceClan;
-    private final ServiceUser serviceUser;
-    private final ServiceNosnja serviceNosnja;
-    private final ServiceOtpremnica serviceOtpremnica;
+    private ObjectOutputStream objectOutputStream;
+   
 
     private User loginUser;
 
@@ -51,23 +40,22 @@ public class ClientThread extends Thread {
         this.socket = socket;
         objectInputStream = new ObjectInputStream(socket.getInputStream());
         objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-        serviceClan = new ServiceClanImpl();
-        serviceUser = new ServiceUserImpl();
-        serviceNosnja = new ServiceNosnjaImpl();
-        serviceOtpremnica = new ServiceOtpremnicaImpl();
+        
     }
 
     @Override
     public void run() {
         while (!socket.isClosed()) {
             try {
-                RequestObject requestObject = (RequestObject) objectInputStream.readObject();
-                ResponseObject responseObject = handleRequest(requestObject);
-                objectOutputStream.writeObject(responseObject);
+                while (!isInterrupted()) {
+                    RequestObject requestObject = (RequestObject) objectInputStream.readObject();
+                    ResponseObject responseObject = handleRequest(requestObject);
+                    objectOutputStream.writeObject(responseObject);
+                }
             } catch (IOException ex) {
-                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
-                Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+                //Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -94,33 +82,33 @@ public class ClientThread extends Thread {
             case Operation.VRATI_CLANOVE_PO_KRITERIJUMU:
                 return vratiClanovePoKrit((Clan) requestObject.getData());
             case Operation.OBRISI_CLANA:
-                return obrisiClana((Clan)requestObject.getData());
+                return obrisiClana((Clan) requestObject.getData());
             case Operation.IZMENI_CLANA:
-                return izmeniClana((Clan)requestObject.getData());
+                return izmeniClana((Clan) requestObject.getData());
             case Operation.SAVE_NOSNJA:
-                return sacuvajNosnju((Nosnja)requestObject.getData());
+                return sacuvajNosnju((Nosnja) requestObject.getData());
             case Operation.OBRISI_NOSNJU:
-                return obrisiNosnju((Nosnja)requestObject.getData());
+                return obrisiNosnju((Nosnja) requestObject.getData());
             case Operation.IZMENI_NOSNJU:
-                return izmeniNosnju((Nosnja)requestObject.getData());
+                return izmeniNosnju((Nosnja) requestObject.getData());
             case Operation.VRATI_JEDNU_NOSNJU:
-                return vratiNosnju((Nosnja)requestObject.getData());
+                return vratiNosnju((Nosnja) requestObject.getData());
             case Operation.VRATI_SVЕ_NOSNJE:
-                return vratiSveNosnje((List<Nosnja>)requestObject.getData());
+                return vratiSveNosnje((List<Nosnja>) requestObject.getData());
             case Operation.VRATI_NOSNJE_PO_KRITERIJUMU:
-                return vratiNosnjePoKrt((Nosnja)requestObject.getData());
+                return vratiNosnjePoKrt((Nosnja) requestObject.getData());
             case Operation.SAVE_OTPREMNICA:
-                return sacuvajOtpremnicu((Otpremnica)requestObject.getData());
+                return sacuvajOtpremnicu((Otpremnica) requestObject.getData());
             case Operation.IZMENI_OTPREMNICU:
-                return izmeniOtpremnicu((Otpremnica)requestObject.getData());
+                return izmeniOtpremnicu((Otpremnica) requestObject.getData());
             case Operation.OBRISI_OTPREMNICU:
-                return obrisiOtpremnicu((Otpremnica)requestObject.getData());
+                return obrisiOtpremnicu((Otpremnica) requestObject.getData());
             case Operation.VRATI_SVЕ_OTPREMNICE:
                 return vratiSveOtpremnice();
             case Operation.VRATI_JEDNU_OTPREMNICE:
-                return vratiJednuOtp((Otpremnica)requestObject.getData());
+                return vratiJednuOtp((Otpremnica) requestObject.getData());
             case Operation.VRATI_OTPREMNICE_PO_KRITERIJUMU:
-                return vratiOtpPoKrt((Otpremnica)requestObject.getData());
+                return vratiOtpPoKrt((Otpremnica) requestObject.getData());
         }
         return null;
     }
@@ -128,7 +116,7 @@ public class ClientThread extends Thread {
     private ResponseObject saveClan(Clan clan) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Clan c = serviceClan.zapamtiCl(clan);
+            Clan c = Controller.getInstance().saveClan(clan);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(c);
         } catch (Exception ex) {
@@ -140,11 +128,9 @@ public class ClientThread extends Thread {
     }
 
     private ResponseObject login(User user1) {
-        /*String username = (String) data.get("username");
-        String password = (String) data.get("password");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            User user = serviceUser.login(user1);
+            User user = Controller.getInstance().login(user1);
             responseObject.setData(user);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             loginUser = user;
@@ -159,7 +145,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiClana(Clan data) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Clan c = serviceClan.vratiCl(data);
+            Clan c = Controller.getInstance().vratiClana(data);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(c);
         } catch (Exception ex) {
@@ -173,7 +159,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiSveClanove(List<Clan> list) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<IDomainObject> clanovi = serviceClan.vratiListuCl();
+            List<IDomainObject> clanovi = Controller.getInstance().vratListuCl(new Clan());
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(clanovi);
         } catch (Exception ex) {
@@ -185,12 +171,9 @@ public class ClientThread extends Thread {
     }
 
     private ResponseObject vratiClanovePoKrit(Clan clan) {
-        /*String sifra = (String) map.get("sifra");
-        String ime = (String) map.get("ime");
-        String prezime = (String) map.get("prezime");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<IDomainObject> clanovi = serviceClan.vratiClanovePoKriterijumu(clan);
+            List<IDomainObject> clanovi = Controller.getInstance().vratiClanovePoKriterijumu(clan);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(clanovi);
         } catch (Exception ex) {
@@ -204,7 +187,7 @@ public class ClientThread extends Thread {
     private ResponseObject obrisiClana(Clan clan) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            serviceClan.obrisiCl(clan);
+            Controller.getInstance().obrisiClana(clan);
             responseObject.setStatus(ResponseStatus.SUCCESS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -217,7 +200,7 @@ public class ClientThread extends Thread {
     private ResponseObject izmeniClana(Clan clan) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Clan c = serviceClan.izmeniCl(clan);
+            Clan c = Controller.getInstance().izmeniClana(clan);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(c);
         } catch (Exception ex) {
@@ -231,7 +214,7 @@ public class ClientThread extends Thread {
     private ResponseObject sacuvajNosnju(Nosnja nosnja) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Nosnja n = serviceNosnja.sacuvajNo(nosnja);
+            Nosnja n = Controller.getInstance().saveNosnja(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(n);
         } catch (Exception ex) {
@@ -245,7 +228,7 @@ public class ClientThread extends Thread {
     private ResponseObject obrisiNosnju(Nosnja nosnja) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            serviceNosnja.obrisiNo(nosnja);
+            Controller.getInstance().obrisiNosnju(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -258,7 +241,7 @@ public class ClientThread extends Thread {
     private ResponseObject izmeniNosnju(Nosnja nosnja) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Nosnja n = serviceNosnja.izmeniNo(nosnja);
+            Nosnja n = Controller.getInstance().izmeniNosnju(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(n);
         } catch (Exception ex) {
@@ -272,7 +255,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiNosnju(Nosnja nosnja) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Nosnja n = serviceNosnja.vratiNo(nosnja);
+            Nosnja n = Controller.getInstance().vratiNosnju(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(n);
         } catch (Exception ex) {
@@ -286,7 +269,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiSveNosnje(List<Nosnja> list) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<IDomainObject> nosnje = serviceNosnja.vratiListuNo();
+            List<IDomainObject> nosnje = Controller.getInstance().vratiListuNosnji(new Nosnja());
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(nosnje);
         } catch (Exception ex) {
@@ -298,12 +281,9 @@ public class ClientThread extends Thread {
     }
 
     private ResponseObject vratiNosnjePoKrt(Nosnja nosnja) {
-        /*String sifra1 = (String) map.get("sifraNosnje");
-        String naziv = (String) map.get("naziv");
-        String vrsta = (String) map.get("vrsta");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<IDomainObject> nosnje = serviceNosnja.vratiNosnjePoKrit(nosnja);
+            List<IDomainObject> nosnje = Controller.getInstance().vratiNosnjePoKrit(nosnja);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(nosnje);
         } catch (Exception ex) {
@@ -317,7 +297,7 @@ public class ClientThread extends Thread {
     private ResponseObject sacuvajOtpremnicu(Otpremnica otpremnica) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Otpremnica otp = serviceOtpremnica.sacuvajOt(otpremnica);
+            Otpremnica otp = Controller.getInstance().saveOtpremnica(otpremnica);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otp);
         } catch (Exception ex) {
@@ -331,7 +311,7 @@ public class ClientThread extends Thread {
     private ResponseObject izmeniOtpremnicu(Otpremnica otpremnica) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Otpremnica otp = serviceOtpremnica.izmeniOtpremnicu(otpremnica);
+            Otpremnica otp = Controller.getInstance().izmeniOtpremnicu(otpremnica);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otp);
         } catch (Exception ex) {
@@ -345,7 +325,7 @@ public class ClientThread extends Thread {
     private ResponseObject obrisiOtpremnicu(Otpremnica otpremnica) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            serviceOtpremnica.obrisiOtp(otpremnica);
+            Controller.getInstance().obrisiOtpremnicu(otpremnica);
             responseObject.setStatus(ResponseStatus.SUCCESS);
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -358,7 +338,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiSveOtpremnice() {
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<IDomainObject> otpremnice = serviceOtpremnica.vratiOt();
+            List<IDomainObject> otpremnice = Controller.getInstance().vratiListuOtpremnica(new Otpremnica());
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otpremnice);
         } catch (Exception ex) {
@@ -372,7 +352,7 @@ public class ClientThread extends Thread {
     private ResponseObject vratiJednuOtp(Otpremnica otpremnica) {
         ResponseObject responseObject = new ResponseObject();
         try {
-            Otpremnica otp = serviceOtpremnica.vratiOt(otpremnica);
+            Otpremnica otp = Controller.getInstance().vratiOtpremnicu(otpremnica);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otp);
         } catch (Exception ex) {
@@ -384,11 +364,9 @@ public class ClientThread extends Thread {
     }
 
     private ResponseObject vratiOtpPoKrt(Otpremnica otp) {
-        /*String sifra1 = (String) map.get("sifra");
-        String clan = (String) map.get("clan");*/
         ResponseObject responseObject = new ResponseObject();
         try {
-            List<IDomainObject> otpremnice = serviceOtpremnica.vratiOtpPoKrt(otp);
+            List<IDomainObject> otpremnice = Controller.getInstance().vratiOtpremnicePoKriterijumu(otp);
             responseObject.setStatus(ResponseStatus.SUCCESS);
             responseObject.setData(otpremnice);
         } catch (Exception ex) {
@@ -397,6 +375,30 @@ public class ClientThread extends Thread {
             responseObject.setErrorMessage(ex.getMessage());
         }
         return responseObject;
+    }
+
+    public void saljiKraj() {
+        ObjectOutputStream out = null;
+        try {
+            out = new ObjectOutputStream(socket.getOutputStream());
+            ResponseObject rs = new ResponseObject();
+            rs.setOperation(Operation.GASENJE);
+            out.writeObject(rs);
+        } catch (IOException ex) {
+            //Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Greska u komunikaciji");
+        } finally {
+            try {
+                out.close();
+            } catch (IOException ex) {
+                System.out.println("Greska u komunikaciji");
+            }
+        }
+    }
+
+    private void vratiOdgovor(ResponseObject responseObject) throws IOException {
+        ObjectOutputStream outSocket = new ObjectOutputStream(socket.getOutputStream());
+        outSocket.writeObject(responseObject);
     }
 
 }

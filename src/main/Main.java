@@ -5,7 +5,7 @@
  */
 package main;
 
-import form.ServerMainForm;
+import form.FormServer;
 
 /**
  *
@@ -13,7 +13,7 @@ import form.ServerMainForm;
  */
 public class Main {
     public static void main(String[] args) {
-        ServerMainForm smf = new ServerMainForm();
-        smf.setVisible(true);
+        FormServer fs = new FormServer(null, true);
+        fs.setVisible(true);
     }
 }
