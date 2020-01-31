@@ -24,7 +24,6 @@ public class DatabaseBroker {
         try {
             Connection connection = ConnectionFactory.getInstance().getConnection();
             StringBuilder sb = new StringBuilder();
-            StringBuilder sb2 = new StringBuilder();
             sb.append("INSERT INTO ")
                     .append(domainObject.getTableName())
                     .append(" (").append(domainObject.getAllColumnNames()).append(")")
@@ -39,24 +38,6 @@ public class DatabaseBroker {
             if (rs.next()) {
                 Long id = rs.getLong(1);
                 domainObject.setId(id);
-                for (int j = 0; j < domainObject.vratiBrojVezanihObjekata(); j++) {
-                    IDomainObject vezo = null;
-                    for (int i = 0; i < domainObject.vratiBrojSlogovaVezanogObjekta(j); i++) {
-                        vezo = domainObject.vratiSlogVezanogObjekta(j, i);
-                        vezo.setId(id);
-                        sb2.append("INSERT INTO ")
-                                .append(vezo.getTableName())
-                                .append(" (").append(vezo.getAllColumnNames()).append(")")
-                                .append(" VALUES (")
-                                .append(vezo.getValuesForInsert())
-                                .append(")");
-                        String query1 = sb2.toString();
-                        System.out.println(query1);
-                        statement = connection.createStatement();
-                        statement.executeUpdate(query1);
-                        sb2.setLength(0);
-                    }
-                }
             }
             statement.close();
             return domainObject;
@@ -90,46 +71,20 @@ public class DatabaseBroker {
         Connection connection = ConnectionFactory.getInstance().getConnection();
         Statement statement;
         StringBuilder sb = new StringBuilder();
-        StringBuilder sb2 = new StringBuilder();
-        if (domainObject.vratiBrojVezanihObjekata() == 0 ) {
-            sb.append("UPDATE ")
-                    .append(domainObject.getTableName())
-                    .append(" SET ")
-                    .append(domainObject.getColumnNameAndValuesForUpdate())
-                    .append(" WHERE ")
-                    .append(domainObject.getKeyName())
-                    .append(" = ")
-                    .append(domainObject.getKeyValue());
-            String query = sb.toString();
-            System.out.println(query);
+        sb.append("UPDATE ")
+                .append(domainObject.getTableName())
+                .append(" SET ")
+                .append(domainObject.getColumnNameAndValuesForUpdate())
+                .append(" WHERE ")
+                .append(domainObject.getKeyName())
+                .append(" = ")
+                .append(domainObject.getKeyValue());
+        String query = sb.toString();
+        System.out.println(query);
 
-            statement = connection.createStatement();
-            statement.executeUpdate(query);
-        } else {
-            for (int j = 0; j < domainObject.vratiBrojVezanihObjekata(); j++) {
-                IDomainObject vezo = domainObject.vratiVezaniObjekat(j);
-                vezo.setId(Long.parseLong(domainObject.getKeyValue()));
-                
-                delete(vezo);
-                
-                for (int i = 0; i < domainObject.vratiBrojSlogovaVezanogObjekta(j); i++) {
-                        vezo = domainObject.vratiSlogVezanogObjekta(j, i);
-                        vezo.setId(Long.parseLong(domainObject.getKeyValue()));
-                        sb2.append("INSERT INTO ")
-                                .append(vezo.getTableName())
-                                .append(" (").append(vezo.getAllColumnNames()).append(")")
-                                .append(" VALUES (")
-                                .append(vezo.getValuesForInsert())
-                                .append(")");
-                        String query1 = sb2.toString();
-                        System.out.println(query1);
-                        statement = connection.createStatement();
-                        statement.executeUpdate(query1);
-                        sb2.setLength(0);
-                }
-            }
-        }
-
+        statement = connection.createStatement();
+        statement.executeUpdate(query);
+        
         return domainObject;
 
     }
@@ -210,9 +165,7 @@ public class DatabaseBroker {
                 }
             }
         }
-        /*if (object == null) {
-            throw new Exception("No such user");
-        }*/
+        
         return object;
     }
 

@@ -6,7 +6,10 @@
 package so.izdavanjeNosnje;
 
 import domain.IDomainObject;
+import domain.IzmeneOtpremnice;
 import domain.Otpremnica;
+import domain.StavkaOtpremnice;
+import java.util.List;
 import so.AbstractGenericOperation;
 
 /**
